@@ -1,6 +1,6 @@
 # GetSkinsInfo
 
--> Saves an ordered array with Skin name[ru, en, ua], skin id and skin screenshot link <-
+-> Saves an ordered array with Skin name[ru, en, ua], skin id, skin rarity and skin screenshot link <-
 
 1. Build project as jar
 2. Open CMD

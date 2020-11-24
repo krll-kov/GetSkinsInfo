@@ -49,19 +49,22 @@ class AppModule extends AbstractModule
      * 
      * @return bool 
      */
-    private function matchData($pattern, $names_en, $names_ru, $names_ua, $identifiers, &$id, &$tag_ru, &$tag_en, &$tag_ua){
+    private function matchData($pattern, $names_en, $names_ru, $names_ua, $identifiers, &$id, &$tag_ru, &$tag_en, &$tag_ua, &$rarity){
 
         if(
             ! preg_match("/\\\"([0-9]+)\\\"[^\\\"]+\\\"name\\\"\\s*?\\\"".preg_quote($pattern)."\\\"[^\\\"]+\\\"description_string\\\"\\s*?\\\"[^\\\"]+\\\"\\s*?\\\"description_tag\\\"\\s*?\\\"#([^\\\"]+)\\\"/uim", $identifiers, $kits) ||
             ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_en, $tags_en ) ||
             ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ru, $tags_ru ) ||
-            ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ua, $tags_ua )
+            ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ua, $tags_ua ) ||
+            ! preg_match_all( "/^\\s*?\\\"".preg_quote($pattern)."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $identifiers, $kitRarity );
         ) return false;
+        
         
         $id = $kits[1];       
         $tag_ru = $tags_ru[1];
         $tag_en = $tags_en[1];
         $tag_ua = $tags_ua[1];
+        $rarity = $kitRarity[1][1];
         
         return true;
     }
@@ -90,8 +93,8 @@ class AppModule extends AbstractModule
             for( $try=1; $try<=3; $try++ ){
                 list( $weapon, $pattern, $link ) = $this->tagWeapon($line, $try+1);
 
-                if($this->matchData($pattern, $names_en, $names_ru, $names_ua, $identifiers, $id, $tag_ru, $tag_en, $tag_ua)){
-                    $this->skins[$weapon][$id] = ["IMAGE"=>$link, "TAG_RU"=>$tag_ru, "TAG_EU"=>$tag_en, "TAG_UA"=>$tag_ua];                           
+                if($this->matchData($pattern, $names_en, $names_ru, $names_ua, $identifiers, $id, $tag_ru, $tag_en, $tag_ua, $rarity)){
+                    $this->skins[$weapon][$id] = ["IMAGE"=>$link, "RARITY"=> $rarity, "TAG_RU"=>$tag_ru, "TAG_EU"=>$tag_en, "TAG_UA"=>$tag_ua];                           
                     print "[{$i}/".count($matches)."] id{$id} - {$tag_en} ({$weapon})" . ($try > 1 ? " try {$try}" : null ) . PHP_EOL;
                     continue 2;
                 }
