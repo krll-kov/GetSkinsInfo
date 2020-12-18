@@ -104,7 +104,7 @@ class AppModule extends AbstractModule
         print "Saving to JSON...\n";
         
         # write skins data to weapons.json
-        $stream = fopen("weapons.json", "w+");
+        $stream = fopen("items.json", "w+");
         fwrite($stream, Json::encode($this->skins));
         fclose($stream);
         
