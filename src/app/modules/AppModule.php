@@ -5,7 +5,7 @@ use windows;
 use Exception;
 use bundle\preg\Preg;
 use std, gui, framework, app;
-
+use facade\Json;
 
 class AppModule extends AbstractModule
 {
@@ -54,16 +54,13 @@ class AppModule extends AbstractModule
         if(
             ! preg_match("/\\\"([0-9]+)\\\"[^\\\"]+\\\"name\\\"\\s*?\\\"".preg_quote($pattern)."\\\"[^\\\"]+\\\"description_string\\\"\\s*?\\\"[^\\\"]+\\\"\\s*?\\\"description_tag\\\"\\s*?\\\"#([^\\\"]+)\\\"/uim", $identifiers, $kits) ||
             ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_en, $tags_en ) ||
-            ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ru, $tags_ru ) ||
-            ! preg_match( "/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ua, $tags_ua ) ||
             ! preg_match_all( "/^\\s*?\\\"".preg_quote($pattern)."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $identifiers, $kitRarity );
         ) return false;
         
-        
         $id = $kits[1];       
-        $tag_ru = $tags_ru[1];
+        $tag_ru = preg_match("/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ru, $tags_ru) ? $tags_ru[1] : $tags_en[1];
         $tag_en = $tags_en[1];
-        $tag_ua = $tags_ua[1];
+        $tag_ua = preg_match("/^\\s*?\\\"".preg_quote($kits[2])."\\\"\\s*?\\\"([^\"]+)\\\"\\s*?$/uim", $names_ua, $tags_ua) ? $tags_ua[1] : $tag_ru;
         $rarity = $kitRarity[1][1];
         
         return true;
@@ -77,8 +74,8 @@ class AppModule extends AbstractModule
         # load all files data
         $patterns    = $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\scripts\\items\\items_game_cdn.txt' );
         $names_en    = str::decode( $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\resource\\csgo_english.txt' ), 'UTF-16LE'); // with decode utf16le
-        $names_ru    = str::encode( $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\resource\\csgo_russian.txt' ), 'UTF-8'); // with encode utf8; file must be converted to UTF-8
-        $names_ua    = str::encode( $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\resource\\csgo_ukrainian.txt' ), 'UTF-8'); // with encode utf8; file must be converted to UTF-8
+        $names_ru    = str::decode( $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\resource\\csgo_russian.txt' ), 'UTF-16LE'); // with encode utf8; file must be converted to UTF-8
+        $names_ua    = str::decode( $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\resource\\csgo_ukrainian.txt' ), 'UTF-16LE'); // with encode utf8; file must be converted to UTF-8
         
         $identifiers = $this->readFile( get_defined_constants()["CSGO_PATH"] . 'csgo\\scripts\\items\\items_game.txt' ); 
 
@@ -107,8 +104,8 @@ class AppModule extends AbstractModule
         print "Saving to JSON...\n";
         
         # write skins data to weapons.json
-        $stream = fopen("weapons.json", "w");
-        fwrite($stream, json_encode($this->skins));
+        $stream = fopen("weapons.json", "w+");
+        fwrite($stream, Json::encode($this->skins));
         fclose($stream);
         
         if( ! empty($errors) ){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project author="lonad" authorOS="Windows 10" createdAt="1606177900275" ideName="DevelNext" ideVersion="16.7.0" ideVersionHash="2017103112" name="GetSkinsInfo" packageName="app" template="ide\project\templates\DefaultGuiProjectTemplate" updatedAt="1606243373011">
+<project author="lonad" authorOS="Windows 10" createdAt="1606177900275" ideName="DevelNext" ideVersion="16.7.0" ideVersionHash="2017103112" name="GetSkinsInfo" packageName="app" template="ide\project\templates\DefaultGuiProjectTemplate" updatedAt="1607801184617">
   <tree>
     <expanded>
     <path src=""/>
